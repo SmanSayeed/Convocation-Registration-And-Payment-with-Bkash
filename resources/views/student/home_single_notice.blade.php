@@ -1,0 +1,1 @@
+home_single_notice.blade.php

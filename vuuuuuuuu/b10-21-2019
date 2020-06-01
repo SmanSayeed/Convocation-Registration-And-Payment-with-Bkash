@@ -1,0 +1,665 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+
+use DB;
+
+use Validator;
+
+use Illuminate\Support\Facades\Auth;
+
+use PDF;
+
+use Shipu\Bkash\Managers\Checkout;
+use Shipu\Bkash\Enums\BkashKey;
+use Shipu\Bkash\Apis\Checkout\CheckoutBaseApi;
+
+
+
+
+class studentPayment extends Controller
+{
+
+    public function StudentPayment(Request $request){
+    
+    	 return view('student.payment');
+    
+	
+}
+public function test2(){
+        $checkoutConfig = [
+    BkashKey::SANDBOX       => "true",
+    BkashKey::VERSION       => "v1.2.0-beta",
+    BkashKey::APP_KEY       => "5nej5keguopj928ekcj3dne8p",
+    BkashKey::APP_SECRET    => "1honf6u1c56mqcivtc9ffl960slp4v2756jle5925nbooa46ch62",
+    BkashKey::USER_NAME     => "testdemo",
+    BkashKey::PASSWORD      => "test%#de23@msdao",
+    BkashKey::SANDBOX_SCRIPT => "https://scripts.sandbox.bka.sh/versions/1.2.0-beta/checkout/payment/execute/NSX3DNX1571561658540",
+    BkashKey::PRODUCTION_SCRIPT => "",
+];
+// echo "<pre>";    
+//  dd($request);
+//  echo "</pre>";          
+//  die();
+
+        $checkout = new Checkout($checkoutConfig);
+
+        $payerReference = 'your payerReference';
+
+        // $f_key = Auth::user()->id; 
+        // DB::table('bkashpayments')->insert(
+        //          [
+        //          'f_key' =>$f_key,
+        //          'bkash_paymentid'=>$request->paymentId,  
+                    
+        //          ]
+        //      );
+
+echo $checkout->payment()->execute("NSX3DNX1571561658540")->query()->toJson();
+}
+
+public function test(){
+
+    $checkoutConfig = [
+    BkashKey::SANDBOX       => "true",
+    BkashKey::VERSION       => "v1.2.0-beta",
+    BkashKey::APP_KEY       => "5nej5keguopj928ekcj3dne8p",
+    BkashKey::APP_SECRET    => "1honf6u1c56mqcivtc9ffl960slp4v2756jle5925nbooa46ch62",
+    BkashKey::USER_NAME     => "testdemo",
+    BkashKey::PASSWORD      => "test%#de23@msdao",
+    BkashKey::SANDBOX_SCRIPT => "https://checkout.sandbox.bka.sh/v1.2.0-beta/checkout/payment/search/6JK201SK9E",
+    BkashKey::PRODUCTION_SCRIPT => "",
+];
+ $checkout = new Checkout($checkoutConfig);
+
+             // $o = $checkout->support()->queryOrganizationBalance();
+             //       echo "<pre>";
+             //         print_r($o);
+             //     echo "</pre>";
+             //     die();
+$d = $checkout->queryOrganizationBalance();
+// $d =$checkout ->support()->searchTransaction("6JL301SM11");
+echo "<pre>";
+print_r($d);
+echo "</pre>";
+die();
+
+// $tokenApi = new CheckoutBaseApi($checkoutConfig);
+// $grandToken = $tokenApi->grantToken();
+
+// echo $grandToken()->id_token."             <br><br>  "; // return only id_token
+// echo $grandToken()->refresh_token; // return only refresh_token
+// // echo $grandToken()->statusCode; // return only statusCode
+// // echo $grandToken()->statusMessage; 
+// die();
+
+        $checkout = new Checkout($checkoutConfig);
+
+        $payerReference = 'your payerReference';
+        // $callbackUrl = 'merchant callback url';
+
+// $checkout->payment()->create( $amount, $merchantInvoiceNumber, $intent, $currency, $merchantAssociationInfo );
+echo $checkout->payment()->create("4500", "cou1")->query()->toJson();
+}
+
+
+  public function StudentPaymentProcess(Request $request){
+    	// echo "<pre>";
+        // dd( $request); 
+     //        echo "</pre>";
+        // die();
+  		     $f_key = Auth::user()->id;
+
+             $p = DB::table('bkashpayments')->where('f_key',$f_key)->get()->first();
+                    	// echo $request->p_id;die();
+                     // if($p){
+                 // 	   $p = DB::table('bkashpayments')->where('f_key',$f_key)->get()->first();
+                 // }else{
+                 // 	echo 'not done';die();
+                 // }
+                 // echo $p->bkash_paymentid; die();
+
+
+                 $checkoutConfig = [
+                     BkashKey::SANDBOX       => "true",
+                     BkashKey::VERSION       => "v1.2.0-beta",
+                     BkashKey::APP_KEY       => "5nej5keguopj928ekcj3dne8p",
+                     BkashKey::APP_SECRET    => "1honf6u1c56mqcivtc9ffl960slp4v2756jle5925nbooa46ch62",
+                     BkashKey::USER_NAME     => "testdemo",
+                     BkashKey::PASSWORD      =>  "test%#de23@msdao",
+
+                     BkashKey::SANDBOX_SCRIPT => "https://scripts.sandbox.bka.sh/versions/1.2.0-beta/checkout/bKash-checkout-sandbox.js",
+                     BkashKey::PRODUCTION_SCRIPT => "",
+                 ];
+    			 
+    			 $checkout = new Checkout($checkoutConfig);
+    			     // $o = $checkout->support()->queryOrganizationBalance();
+            //        echo "<pre>";
+            //          print_r($o);
+            //      echo "</pre>";
+            //      die();
+
+             	 $paymentId =  $request->p_id;
+
+
+             	        if(!$p){
+
+    			if($request->status=='success' && $request->n_type=='success'){
+ 
+
+                 $paid_data = $checkout->payment()->queryPayment($paymentId);
+
+             
+
+                 // echo $paid_data()->amount; die();
+                 echo "<pre>";
+                     print_r($paid_data);
+                 echo "</pre>";
+                 die();
+
+
+
+                 // $paid_data = $checkout->payment()->capture($paymentId);
+
+                 // echo "<pre>";
+                 //  print_r($paid_data);
+                 // echo "</pre>";
+                 // die();
+
+
+                 // $paid_data =$checkout->payment()->void($paymentId);
+                 // echo "<pre>";
+                 //  print_r($paid_data);
+                 // echo "</pre>";
+                 // die();
+
+          
+            //      DB::table('bkashpayments')
+            // ->where('f_key',$f_key)
+            // ->insert([  'f_key' =>$f_key,
+            //         'bkash_paymentid'=>$request->p_id,
+            //         'bkash_trxID'=>$paid_data()->trxID,    
+            //         'bkash_amount'=>$paid_data()->amount,  
+            //         'bkash_currency'=>$paid_data()->currency,  
+            //         'bkash_transactionStatus'=>$paid_data()->transactionStatus,  
+            //         'bkash_intent'=>$paid_data()->intent,
+            //         'bkash_merchantinvoicenumber'=>$paid_data()->merchantInvoiceNumber,  
+            //         'bkash_updatetime'=>$paid_data()->updateTime,
+            //         'bkash_createtime'=>$paid_data()->createTime, ]);
+            // $success='Successful';
+            //   // return view('student-payment-status')->with('success',$success);
+
+            // DB::table('finals')->where('f_key',$f_key)->update(['payment_key'=>2]);
+            // DB::table('users')->where('id',$f_key)->update(['payment_key'=>2]);
+            // return redirect()->route('student-payment-status')->with('success',$success);
+
+          }  else if($request->status=='failed'){
+			    	// echo $request->status;
+			    	// echo $request->n_msg;die();
+			    	  // return view('student.payment_process')->with('error','Failed..!! '.$request->n_msg);
+			    	 // return view('student.payment_process')->with('p','0')->with('error','Failed..!! '.$request->n_msg);
+          	 return redirect()->route('student-payment-status')->with('p','0')->with('error','Failed..!! '.$request->n_msg);
+
+					    } else if($request->status=='failed?n_type=error'){
+					    	// echo $request->status."<br>";
+					    	// echo $request->n_msg;die();
+					    	 // return view('student.payment_process')->with('error','Failed..!! '.$request->n_msg);
+					    	 // return view('student.payment_process')->with('p','0')->with('error','Failed..!! '.$request->n_msg);
+					    	 return redirect()->route('student-payment-status')->with('p','0')->with('error','Failed..!! '.$request->n_msg);
+					    
+						} else {
+									 return view('student.payment_process')->with('p','0');
+							 // return redirect()->route('student-payment-status')->with('error','Failed..!! '.$request->n_msg);
+							   }
+        
+   		 }  else{
+		// echo 'test';
+		return view('student.payment_process')->with('p',$p); 
+	
+	}
+}
+
+    public function StudentPaymentAction(Request $request){
+
+
+
+				return view('student.payment_action')->with('data',$request);
+
+// dd($data);
+
+    }
+
+    public function StudentPaymentExecute(Request $request){
+
+    $checkoutConfig = [
+    BkashKey::SANDBOX       => "true",
+    BkashKey::VERSION       => "v1.2.0-beta",
+    BkashKey::APP_KEY       => "5nej5keguopj928ekcj3dne8p",
+    BkashKey::APP_SECRET    => "1honf6u1c56mqcivtc9ffl960slp4v2756jle5925nbooa46ch62",
+    BkashKey::USER_NAME     => "testdemo",
+    BkashKey::PASSWORD      => "test%#de23@msdao",
+    BkashKey::SANDBOX_SCRIPT => "https://scripts.sandbox.bka.sh/versions/1.2.0-beta/checkout/bKash-checkout-sandbox.js",
+    BkashKey::PRODUCTION_SCRIPT => "",
+];
+// echo "<pre>";	
+// 	dd($request);
+// 	echo "</pre>";			
+// 	die();
+        
+		$checkout = new Checkout($checkoutConfig);
+
+		$payerReference = 'your payerReference';
+
+             DB::table('executes') ->insert([ 
+                    'paymentId'=>$request->paymentId,
+                    'createTime'=>$request->createTime,    
+                    'orgLogo'=>$request->orgLogo,  
+                    'orgName'=>$request->orgName,  
+                    'transactionStatus'=>$request->transactionStatus,  
+                    'amount'=>$request->amount,
+                    'currency'=>$request->currency,  
+                    'intent'=>$request->intent,
+                    'merchantInvoiceNumber'=>$request->merchantInvoiceNumber, ]);
+
+		// $f_key = Auth::user()->id; 
+		// DB::table('bkashpayments')->insert(
+		// 		    [
+		// 		    'f_key' =>$f_key,
+		// 		    'bkash_paymentid'=>$request->paymentId,  
+				    
+		// 		    ]
+		// 		);
+
+echo $checkout->payment()->execute($request->paymentId)->query()->toJson();
+
+
+    }
+
+
+
+        public function StudentPaymentCreate(Request $request){
+
+    $checkoutConfig = [
+    BkashKey::SANDBOX       => "true",
+    BkashKey::VERSION       => "v1.2.0-beta",
+    BkashKey::APP_KEY       => "5nej5keguopj928ekcj3dne8p",
+    BkashKey::APP_SECRET    => "1honf6u1c56mqcivtc9ffl960slp4v2756jle5925nbooa46ch62",
+    BkashKey::USER_NAME     => "testdemo",
+    BkashKey::PASSWORD      => "test%#de23@msdao",
+    BkashKey::SANDBOX_SCRIPT => "https://scripts.sandbox.bka.sh/versions/1.2.0-beta/checkout/bKash-checkout-sandbox.js",
+    BkashKey::PRODUCTION_SCRIPT => "",
+];
+
+		$checkout = new Checkout($checkoutConfig);
+
+		$payerReference = 'your payerReference';
+		// $callbackUrl = 'merchant callback url';
+
+// $checkout->payment()->create( $amount, $merchantInvoiceNumber, $intent, $currency, $merchantAssociationInfo );
+echo $checkout->payment()->create($request->amount, $request->ref_no)->query()->toJson();
+        // $data= $checkout->payment()->create($request->amount, $request->ref_no)->query()->toJson();
+// echo "<pre>";
+// print_r($data);
+// echo "</pre>";
+// die();
+// return view('student.payment_action')->with('data',$data);
+
+// dd($data);
+
+    }
+}
+
+
+/*
+
+
+                        )
+
+                )
+
+        )
+
+    [contents:protected] => {"organizationBalance":[{"accountTypeName":"Organization eMoney Account","accountStatus":"Active","accountHolderName":"50011 - testOST Merchant","currency":"BDT","currentBalance":"1866082.74","availableBalance":"1866082.74","updateTime":"2019-10-11T21:44:35:395 GMT+0000"},{"accountTypeName":"Organization Disbursement eMoney Account","accountStatus":"Active","accountHolderName":"50011 - testOST Merchant","currency":"BDT","currentBalance":"6141.56","availableBalance":"6141.56","updateTime":"2019-10-11T21:44:35:395 GMT+0000"}]}
+    [queries:protected] => Apiz\QueryBuilder Object
+        (
+            [_offset:protected] => 0
+            [_take:protected] => 
+            [_node:protected] => 
+            [_map:protected] => Array
+                (
+                    [organizationBalance] => Array
+                        (
+                            [0] => Array
+                                (
+                                    [accountTypeName] => Organization eMoney Account
+                                    [accountStatus] => Active
+                                    [accountHolderName] => 50011 - testOST Merchant
+                                    [currency] => BDT
+                                    [currentBalance] => 1866082.74
+                                    [availableBalance] => 1866082.74
+                                    [updateTime] => 2019-10-11T21:44:35:395 GMT+0000
+                                )
+
+                            [1] => Array
+                                (
+                                    [accountTypeName] => Organization Disbursement eMoney Account
+                                    [accountStatus] => Active
+                                    [accountHolderName] => 50011 - testOST Merchant
+                                    [currency] => BDT
+                                    [currentBalance] => 6141.56
+                                    [availableBalance] => 6141.56
+                                    [updateTime] => 2019-10-11T21:44:35:395 GMT+0000
+                                )
+
+                        )
+
+                )
+
+            [_select:protected] => Array
+                (
+                )
+
+            [_except:protected] => Array
+                (
+                )
+
+            [_baseContents:protected] => Array
+                (
+                    [organizationBalance] => Array
+                        (
+                            [0] => Array
+                                (
+                                    [accountTypeName] => Organization eMoney Account
+                                    [accountStatus] => Active
+                                    [accountHolderName] => 50011 - testOST Merchant
+                                    [currency] => BDT
+                                    [currentBalance] => 1866082.74
+                                    [availableBalance] => 1866082.74
+                                    [updateTime] => 2019-10-11T21:44:35:395 GMT+0000
+                                )
+
+                            [1] => Array
+                                (
+                                    [accountTypeName] => Organization Disbursement eMoney Account
+                                    [accountStatus] => Active
+                                    [accountHolderName] => 50011 - testOST Merchant
+                                    [currency] => BDT
+                                    [currentBalance] => 6141.56
+                                    [availableBalance] => 6141.56
+                                    [updateTime] => 2019-10-11T21:44:35:395 GMT+0000
+                                )
+
+                        )
+
+                )
+
+            [_conditions:protected] => Array
+
+*/
+/*
+
+eyJjdHkiOiJKV1QiLCJlbmMiOiJBMjU2R0NNIiwiYWxnIjoiUlNBLU9BRVAifQ.VNk0-8FP0H_6IXLBS43ewg0BWGgAPiMx2PWQRfJeUD98y0RH79z646Mcc3boUra3V4YPW2dNecKyy7a5SkFfdnjBBDM4uNS1bljg6e02XcXBay5vwPm-fxjtXvP3Lfa0TZoLA3A9K-0YNzi6P2ry3dLfoyIVMUIRL7fhC8q-JGfR3-jZYgm7n3b91N14TPnB1YM-dRZb0wdoV_0rxuWk2bs6PRnvZYbw4mK-UVFtJqO6zOLcFL6bkmyXhqfiJoD2U8x7ZKpZ4VWq3Fed5iv3GRj-E7z15S-8N9E-j0kX5GC8DM-qIBzfYeQHFB38BOI75WHIz89lXN-OlEtvXRG_mQ.MCwHMAXyXJGw3a-x.0agr_zgetrqfEo6-emT-F3TTO_VguO4Z_7gYIFBadd_EeL7g_J2yr2BuluNmb037BzZZ032d0dRLblYMiz6Cy8zJwyrlAbE8xQ7eNBSoYF9LX3ZC3is69ZXqypKabs6VPTjlF-Gfsqo4hcxdunXGoWSzwtoMVGII28IQ1Cl5EVAhNkc26tgf3_-E_hY7NKDZAxpcoewmR6dlcg0prAttleIrtLUgCdqJqoZrkTMtlQl3Jc4OMnRW-tqBEv6L3QDbeohViWtz8tRoVPl7gaKAj9fhLfvs1gpIqAL794BGDyFjVcI6JVfbPKVwRLDF6PVg5FyTg-aRERGaelIceK1G0qmS8O-SIDPNv5jjeg1vSnZsMDUP3IbLgZz1nymJUWNHJ00PP2WCQ5O2g9hYj3pO8tI_mzzE3DNe-pCRk20F-MWPY-wxh70sRHHKFsieZI96ro5Z4MAT8c6G1wvuNc3ZsvAYc1rFY7kicrrwzbOIwjCKvYhvf2kPc5Hg9bZ_cVDZvvytkGhQdIANj5ee4PjGNJxdExQb8k4WsodyR4BS4dtmhGU-g6Pykb1yEr7YegzBx7blh7p368ETRKbSL2Y0z_YmNF0y9yVPCZJY8F2ch20Z4JlX3foO-62SR2rPN_4xBGiUaEYmTLQGmZMIyPq9sg1me9hBzHhw98eCfucl0_T5K2eQcRiygz7eUA5YSDBAyXKG7OcrxWW0ZwmLeSf3MmeSyNTGxlEomIY9qyhJKsS9mEHyTJfWBqLU0xInJURnN--HYTovqiIQfctHdOMAoV0GkAUNHUXs6nSBYoflo4vvS9jk-4zmxT6mWumhsaggL4dJ1P5AdgcS1oXjP4DR8ikpVdkogJcu4v83Y0XskmLcfaMYPcTit0yu_oGtnFElh1mNMCWapu9VkwH_hBNntN9GeiZdzyEy8XnYgKfnKkxYexQMBIkxt_qv7Sys3OsPRQFfPoSPxpijNfZpOy9WcOidGrNSlWGKp-a_08Q-Kz4m1Z8poPnQAjQ0rQsA-sRYiCvbMwt9hr9pUK-o9Q7amjYOe6ZxtLNjXPXvACfU3mL9xjfyydzcrVGhtLVq2FqWVnOS6diBlJKWhGz7VJX3zF7Ol2lvm7B-nCj65r9wWpk0_7H39D9uREKbyAa0pdyndlPwbs7PJv4CEcvnYILbhJbt2Zifn_5zx56TupyzRe7jvhdc_1qA1I0DIGvpjR-mAxF1f-xchmqOIdqbKD1ycxu9qLqE8I44-shd996zUtZCU89q8vaClNrRUjMcS2GJCF_HgxpTZRLCir-botwF8XA5ZcmK4rFHN8SEix0.w8rY98bmFvVtFAl0UbQhWA
+
+*/
+
+/*
+eyJraWQiOiJmalhJQmwxclFUXC9hM215MG9ScXpEdVZZWk5KXC9qRTNJOFBaeGZUY3hlamc9IiwiYWxnIjoiUlMyNTYifQ.eyJzdWIiOiJiM2Q4OGVkZC0xNzc2LTRhMjEtYWZlMi0zN2FkZTk3NzEyZDMiLCJhdWQiOiI1dHVudDRtYXNuNnB2MmhudnRlMXNiNW4zaiIsImV2ZW50X2lkIjoiZDVjOTIwYjYtMzY4MC00ZTIxLWI1NjMtZDFlMzQ3YjY2M2NiIiwidG9rZW5fdXNlIjoiaWQiLCJhdXRoX3RpbWUiOjE1NzA4MTEzNzEsImlzcyI6Imh0dHBzOlwvXC9jb2duaXRvLWlkcC5hcC1zb3V0aGVhc3QtMS5hbWF6b25hd3MuY29tXC9hcC1zb3V0aGVhc3QtMV9rZjVCU05vUGUiLCJjb2duaXRvOnVzZXJuYW1lIjoic2FuZGJveFRlc3RVc2VyIiwiZXhwIjoxNTcwODE0OTcxLCJpYXQiOjE1NzA4MTEzNzJ9.HzOC3k3KRxZ0LmANQvfB_UUUP3-FcptFX0WdwrSkzPG_KgJYLorDXiOrv9AZAFrpdBPsgmI_7ATo9vtOxaRyP1Eh45wHY7NX8ZJ7VnAjBuJSY7uSAVwcntrk_cphhGeHUgE3SyE3XYl2RI9wVlw-Wpu4Vd5pr8m5tTtQO5bNX01141-ly8x_S6eoOcQapC-Xr74X3WLJnh_tF_L9ksSQoS_KXLNOKwOAlBadCH4c8-XvVZ9exEPnHa16A3YNoCFEvUR-VevA-EBTItbEy0SPf3aQj91NT2m9Bdk07-kiQThpKKJ6bMF2smjf_xHNZd9NuicyRsh_F1bzaeFFXYhoXg
+*/
+
+/*
+
+{
+  "paymentID": "A6VUWI21570812786836",
+  "createTime": "2019-10-11T16:53:06:928 GMT+0000",
+  "orgLogo": "https://s3-ap-southeast-1.amazonaws.com/merchantlogo.sandbox.bka.sh/merchant-default-logo.png",
+  "orgName": "TestCheckoutDemoMerchant1",
+  "transactionStatus": "Initiated",
+  "amount": "2000",
+  "currency": "BDT",
+  "intent": "authorization",
+  "merchantInvoiceNumber": "12"
+}
+
+*/
+/*
+
+{
+  "paymentID": "5UTS8QH1570812967301",
+  "createTime": "2019-10-11T16:56:07:409 GMT+0000",
+  "orgLogo": "https://s3-ap-southeast-1.amazonaws.com/merchantlogo.sandbox.bka.sh/merchant-default-logo.png",
+  "orgName": "TestCheckoutDemoMerchant1",
+  "transactionStatus": "Initiated",
+  "amount": "2000",
+  "currency": "BDT",
+  "intent": "authorization",
+  "merchantInvoiceNumber": "12"
+}
+*/
+
+
+
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Bkash Checkout</title>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+            crossorigin="anonymous"></script>
+     <link href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css?family=Alex+Brush" rel="stylesheet">
+    <style>
+        html {
+            margin: 0;
+            padding: 0;
+        }
+        #bKashFrameWrapper {
+            width: 100% !important;
+            height: 100% !important;
+        }
+
+        body {
+  background: #FFF url("https://i.imgur.com/KheAuef.png") top left repeat-x;
+  font-family: 'Alex Brush', cursive !important;
+}
+
+.page    { display: none; padding: 0 0.5em; }
+.page h1 { font-size: 2em; line-height: 1em; margin-top: 1.1em; font-weight: bold; }
+.page p  { font-size: 1.5em; line-height: 1.275em; margin-top: 0.15em; }
+
+#loading {
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 100;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(192, 192, 192, 0.5);
+  background-image: url("https://i.stack.imgur.com/MnyxU.gif");
+  background-repeat: no-repeat;
+  background-position: center;
+}
+    </style>
+</head>
+<body>
+<div class="page">
+<span id="bKash_button"></span>
+
+</div>
+<div id="loading"></div>
+<script type="text/javascript">
+  $(function () {
+    // Change script url when it's live
+    var scriptLink = 'https://scripts.sandbox.bka.sh/versions/1.2.0-beta/checkout/bKash-checkout-sandbox.js';
+
+    var successUrl = '<?=$data["success_url"]?>';
+    var failedUrl = '<?=$data["failed_url"]?>';
+    var amount = '<?=$data["amount"]?>';
+    var ref_no = '<?=$data["ref_no"]?>';
+
+    function errorMessage(response) {
+      let msg = '?n_type=error';
+      if(typeof response.errorMessage === 'undefined') {
+        msg += '&n_key=payment_failed';
+      } else {
+        let errorMessage = '&n_msg=Sorry, your payment was unsuccessful !!! '+data.errorMessage;
+        let errorCode = data.errorCode;
+        let bkashErrorCode = [ 2001, 2002, 2003, 2004, 2007, 2008, 2009, 2011, 2012, 2013, 2020,
+          2021, 2022, 2025, 2027, 2028, 2030, 2031, 2032, 2033, 2036, 2037, 2038, 2040, 2041, 2042,
+          2043, 2044, 2045, 2046, 2047, 2048, 2049, 2050, 2051, 2052, 2053, 2054, 2055, 2056
+        ];
+
+        if(bkashErrorCode.includes(errorCode)) {
+          errorMessage = '&n_key=payment_failed';
+        } else if(errorCode == 2029) {
+          errorMessage = '&n_msg=Sorry, your payment was unsuccessful !!! For same amount transaction, please try again after 10 minutes.';
+        }
+
+        msg += errorMessage;
+      }
+      return msg;
+    }
+
+    $.getScript(scriptLink)
+      .done(function(script){
+        //finished loading the script
+
+
+        var payment_ID = null;
+        var create_Time=null;
+
+        var org_Logo  = null;
+        var org_Name=null;
+
+        var transaction_Status = null;
+        var _amount=null;
+
+        var _currency = null;
+        var _intent=null;
+
+        var merchant_InvoiceNumber = null;
+
+
+        var bkashPaymentRequest = {
+          amount: amount,
+          intent: "sale",
+          ref_no: ref_no,
+          currency: "BDT",
+          _token:"{{csrf_token()}}",
+        };
+
+        //call the bkash init function
+        bKash.init({
+          paymentMode: 'checkout',
+          paymentRequest: bkashPaymentRequest,
+          createRequest: function (request) {
+            // write your logic
+            $.ajax({
+              url: 'bkash_create_payment',
+              type: 'POST',
+              data: request,
+              success: function (response) {
+                data = JSON.parse(response);
+                if (data && data.paymentID != null) {
+                  payment_ID = data.paymentID;
+                  console.log(data);
+                        create_Time=data.createTime;
+
+         org_Logo  = data.orgLogo;
+         org_Name=data.orgName;
+
+         transaction_Status = data.transactionStatus;
+         _amount=data.amount;
+
+         _currency = data.currency;
+         _intent=data.intent;
+
+         merchant_InvoiceNumber = data.merchantInvoiceNumber;
+
+                  bKash.create().onSuccess(data);
+                } else {
+                  bKash.create().onError();
+                  window.location.href = failedUrl+"&n_type=error&n_msg=Sorry, your payment was unsuccessful !!! Invalid Payment Id";
+                }
+              },
+              error: function (xhr, textStatus, errorThrown) {
+                bKash.create().onError();
+                console.log(xhr);
+                window.location.href = failedUrl+"&n_type=error&n_msg=Sorry, your payment was unsuccessful !!! Invalid Request";
+              }
+            });
+
+          },
+          executeRequestOnAuthorization: function () {
+            $.ajax({
+              url: 'bkash_execute_payment',
+              type: 'POST',
+              data: {
+                paymentId: payment_ID, 
+                createTime: create_Time,
+                orgLogo: org_Logo,
+                orgName: org_Name,
+                transactionStatus: transaction_Status,
+                amount: _amount,
+                currency: _currency,
+                intent: _intent,
+                merchantInvoiceNumber: merchant_InvoiceNumber,
+                  _token:"{{csrf_token()}}"
+              },
+              success: function (response) {
+                data = JSON.parse(response);
+                if (data && data.paymentID != null) {
+                  paymentID = null;
+                  window.location.href = successUrl+"&n_type=success&n_key=payment_done&p_id="+data.paymentID;
+                } else {
+                  bKash.execute().onError();
+                  window.location.href = failedUrl+errorMessage(data);
+                }
+              },
+              error: function (xhr) {
+                data = xhr.responseJSON;
+                bKash.execute().onError();
+                window.location.href = failedUrl+errorMessage(data);
+              }
+            });
+
+          },
+          onClose : function () {
+            window.location.href = failedUrl+"&n_type=error&n_msg=Sorry, your payment was unsuccessful !!! Please try again !!!";
+          }
+        });
+
+        $('#bKash_button').click();
+
+      });
+      // window.location.replace(window.location.href);
+  });
+</script>
+
+<script type="text/javascript">
+  function onReady(callback) {
+  var intervalId = window.setInterval(function() {
+    if (document.getElementsByTagName('body')[0] !== undefined) {
+      window.clearInterval(intervalId);
+      callback.call(this);
+    }
+  }, 1000);
+}
+
+function setVisible(selector, visible) {
+  document.querySelector(selector).style.display = visible ? 'block' : 'none';
+}
+
+onReady(function() {
+  setVisible('.page', true);
+  setVisible('#loading', false);
+});
+</script>
+</body>
+</html>
+

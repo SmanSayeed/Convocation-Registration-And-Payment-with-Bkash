@@ -1,0 +1,1 @@
+home_notice_list.blade.php

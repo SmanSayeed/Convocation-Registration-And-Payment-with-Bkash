@@ -1,0 +1,162 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+
+use DB;
+
+use Validator;
+
+use Illuminate\Support\Facades\Auth;
+
+class studentController extends Controller
+{
+    
+    public function GetStudentDashboardPage(){
+        return view('student.dashboard');
+    }
+
+
+    public function FinalRegisterpage(){
+   
+          return view('student.final_register');
+    }
+
+
+
+
+
+      public function FinalRegisterViewpage(){
+        $id = Auth::user()->id; 
+        $data=DB::table('finals')
+                    ->where('f_key',$id)
+                    ->get()->first();
+
+
+
+        // print_r($data);die();
+      
+        return view('student.view_register',['data'=>$data]);
+    }
+
+
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create()
+    {
+        //
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+
+
+
+
+    public function FinalRegistrationProcess(Request $request)
+    {
+
+       
+        // echo $request->name;
+        // echo $request->mobile; 
+        // echo $request->faculty;
+        // echo $request->dept;
+        // echo $request->image;
+        // die();
+        $f_key = Auth::user()->id;
+
+       
+
+         $this->validate($request,[
+            // 'name'=>'required',
+        
+            // 'faculty'=>'required',
+            // 'department'=>'required',
+             'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+
+            ]);
+
+                        $imageName=null;
+                     if( $request->hasFile('image')){
+                      // $sname = strtolower($request->name);  
+                      // $imageName = time().'.'.$sname.'.'.$request->image->getClientOriginalExtension();
+                      // $request->image = $imageName; 
+                      // $request->image->store('public/student_images');
+                            $image = $request->file('image');
+                         $fname= $request->name;
+
+                           $imageName = time().'-'.$fname.'.'.request()->image->getClientOriginalExtension();
+                           $imageName=strtolower($imageName);
+                           $imageName=trim($imageName);
+                            $imageName=str_replace(' ', '', $imageName)  ;
+                                $folder = base_path('student_images/');
+                              // echo $folder;die();
+
+                                         // $filePath = $folder . $name. '.' . $image->getClientOriginalExtension();
+                                          // $this->uploadOne($image, $folder, 'public', $name);
+                                           request()->image->move($folder, $imageName);
+        // echo $request->name;
+        // echo $request->mobile; 
+        // echo $request->faculty;
+        // echo $request->dept;
+        // echo $imageName ;
+
+            }
+          
+       
+        // die();  
+$r = $request;
+       DB::table('finals')->insert([
+        'username' =>$r->name,
+
+            'father' =>$r->father,
+            'mother' =>$r->mother,
+            'hall' =>$r->hall,
+            'registrationno' =>$r->registrationno,
+            'rollno' =>$r->rollno,
+            'session' =>$r->session,
+
+            'degreebsc' =>$r->degreebsc,
+            'degreemsc' =>$r->degreemsc,
+            'address' =>$r->address,
+            'job' =>$r->job,
+
+            'trdx' =>$r->trdx,
+            'bkashno' =>$r->bkashno,
+            'amountpaid' =>$r->amountpaid,
+            'certificateb' =>$r->certificateb,
+             'certificatem' =>$r->certificatem,
+
+
+
+
+        'mobile' =>$r->mobile,
+        'faculty' =>$r->faculty,
+        'dept' =>$r->dept,
+        'image' =>$imageName,
+        'f_key'=>$f_key
+        ]);
+
+        DB::table('users')
+                ->where('id',$f_key)
+                ->update(['final_key'=>1]);
+
+         return redirect()->route('student-view-register')
+
+            ->with('success','You have successfully Registered.')
+
+            ->with('image',$imageName);
+    
+    }
+
+
+
+}
